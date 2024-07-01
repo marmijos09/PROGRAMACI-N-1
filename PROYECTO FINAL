@@ -1,0 +1,141 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX_PRODUCTOS 100
+#define MAX_CANTIDAD 25
+char nombres[MAX_PRODUCTOS][50];
+int cantidades[MAX_PRODUCTOS];
+int precios[MAX_PRODUCTOS];
+int numProductos = 0;
+void ingresarProducto();
+void editarProducto();
+void eliminarProducto();
+void listarProductos();
+int buscarProducto(const char *nombre);
+int main() {
+   int opcion;
+   printf("El inventario puede contener un maximo de %d productos.\n", MAX_PRODUCTOS);
+   printf("El inventario puede contener un maximo de %d productos.\n", MAX_CANTIDAD);
+   do {
+       printf("\nSistema de Inventario de Ropa\n");
+       printf("1. Ingresar producto\n");
+       printf("2. Editar producto\n");
+       printf("3. Eliminar producto\n");
+       printf("4. Listar productos\n");
+       printf("0. Salir\n");
+       printf("Ingrese una opcion: ");
+       scanf("%d", &opcion);
+       switch (opcion) {
+           case 1:
+               ingresarProducto();
+               break;
+           case 2:
+               editarProducto();
+               break;
+           case 3:
+               eliminarProducto();
+               break;
+           case 4:
+               listarProductos();
+               break;
+           case 0:
+               printf("Saliendo del sistema...\n");
+               break;
+           default:
+               printf("Opcion invalida. Intente de nuevo.\n");
+       }
+   } while (opcion != 0);
+   return 0;
+}
+void ingresarProducto() {
+   if (numProductos >= MAX_PRODUCTOS) {
+       printf("El inventario esta lleno. No se pueden agregar mas productos.\n");
+       return;
+   }
+   printf("\nIngresar nuevo producto:\n");
+   printf("Nombre: ");
+   scanf("%s", nombres[numProductos]);
+   int cantidad;
+   do {
+       printf("Cantidad (maximo %d): ", MAX_CANTIDAD);
+       while (scanf("%d", &cantidad) != 1) {
+           printf("Cantidad invalida. Por favor, ingrese un numero entero.\n");
+           while (getchar() != '\n'); 
+       }
+       if (cantidad > MAX_CANTIDAD) {
+           printf("Cantidad maxima permitida es %d.\n", MAX_CANTIDAD);
+       }
+   } while (cantidad > MAX_CANTIDAD);
+   cantidades[numProductos] = cantidad;
+   printf("Precio: ");
+   while (scanf("%d", &precios[numProductos]) != 1) {
+       printf("Precio invalido. Por favor, ingrese un numero entero.\n");
+       while (getchar() != '\n');
+   }
+   numProductos++;
+   printf("Producto ingresado exitosamente. Productos en inventario: %d/%d.\n", numProductos, MAX_PRODUCTOS);
+}
+void editarProducto() {
+   char nombre[50];
+   printf("\nEditar producto:\n");
+   printf("Nombre del producto a editar: ");
+   scanf("%s", nombre);
+   int indice = buscarProducto(nombre);
+   if (indice == -1) {
+       printf("Producto no encontrado.\n");
+       return;
+   }
+   int cantidad;
+   do {
+       while (scanf("%d", &cantidad) != 1) {
+           printf("Cantidad invalida. Por favor, ingrese un numero entero.\n");
+           while (getchar() != '\n'); 
+       }
+       if (cantidad > MAX_CANTIDAD) {
+           printf("Cantidad maxima permitida es %d.\n", MAX_CANTIDAD);
+       }
+   } while (cantidad > MAX_CANTIDAD);
+   cantidades[indice] = cantidad;
+   printf("Nuevo precio (actual: %d): ", precios[indice]);
+   while (scanf("%d", &precios[indice]) != 1) {
+       printf("Precio invalido. Por favor, ingrese un numero entero.\n");
+       while (getchar() != '\n'); 
+   }
+   printf("Producto editado exitosamente.\n");
+}
+void eliminarProducto() {
+   char nombre[50];
+   printf("\nEliminar producto:\n");
+   printf("Nombre del producto a eliminar: ");
+   scanf("%s", nombre);
+   int indice = buscarProducto(nombre);
+   if (indice == -1) {
+       printf("Producto no encontrado.\n");
+       return;
+   }
+   for (int i = indice; i < numProductos - 1; i++) {
+       strcpy(nombres[i], nombres[i + 1]);
+       cantidades[i] = cantidades[i + 1];
+       precios[i] = precios[i + 1];
+   }
+   numProductos--;
+   printf("Producto eliminado exitosamente.\n");
+}
+int buscarProducto(const char *nombre) {
+   for (int i = 0; i < numProductos; i++) {
+       if (strcmp(nombres[i], nombre) == 0) {
+           return i;
+       }
+   }
+   return -1;
+}
+void listarProductos() {
+   if (numProductos == 0) {
+       printf("El inventario esta vacio.\n");
+       return;
+   }
+   printf("\nListado de productos:\n");
+   for (int i = 0; i < numProductos; i++) {
+       printf("Nombre: %s, Cantidad: %d, Precio: %d\n",
+              nombres[i], cantidades[i], precios[i]);
+   }
+}
